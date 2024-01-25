@@ -1,6 +1,7 @@
 {
   "name": "stay-booker-pro-api",
   "version": "0.0.0",
+  "type": "module",
   "private": true,
   "scripts": {
     "start": "node ./server/bin/www",

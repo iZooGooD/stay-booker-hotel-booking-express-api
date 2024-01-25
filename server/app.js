@@ -2,10 +2,14 @@ import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-import indexRouter from './routes/index';
-import usersRouter from './routes/users';
+import { fileURLToPath } from 'url';
+import indexRouter from './routes/index.js';
+import usersRouter from './routes/users.js';
 
 const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -36,4 +40,4 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
-export default router;
+export default app;

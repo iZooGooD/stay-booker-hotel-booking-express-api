@@ -3,10 +3,9 @@
 /**
  * Module dependencies.
  */
-import app from '../app';
+import app from '../app.js';
 import http from 'http';
-
-const debug = debugModule('stay-booker-pro-api:server');
+import debug from 'debug';
 
 /**
  * Get port from environment and store in Express.
