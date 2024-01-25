@@ -5,7 +5,11 @@ import logger from 'morgan';
 import { fileURLToPath } from 'url';
 import indexRouter from './routes/index.js';
 import usersRouter from './routes/users.js';
+import dotenv from 'dotenv';
 
+dotenv.config();
+
+const envType = process.env.NODE_ENV;
 const app = express();
 
 const __filename = fileURLToPath(import.meta.url);
