@@ -5,8 +5,15 @@ import logger from 'morgan';
 import { fileURLToPath } from 'url';
 import indexRouter from './routes/index.js';
 import usersRouter from './routes/users.js';
+import db from '../models/index.js';
 
 const app = express();
+
+db.sequelize.sync({ force: false }).then(() => {
+  console.log('Tables have been successfully created, if they do not already exist');
+}).catch(error => {
+  console.error('Unable to create tables:', error);
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

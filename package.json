@@ -11,6 +11,7 @@
     "cross-env": "^7.0.3",
     "debug": "~2.6.9",
     "dotenv": "^16.4.1",
+    "eslint": "^8.56.0",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
