@@ -31,7 +31,7 @@ npm install
 Ensure MySQL is installed on your windows/linux/mac. Create two databases: one for production and one for testing.
 
 ```sql
-CREATE DATABASE staybooker_pro;
+CREATE DATABASE staybooker_prod;
 CREATE DATABASE staybooker_test;
 ```
 
