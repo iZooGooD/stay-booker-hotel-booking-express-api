@@ -9,6 +9,7 @@ import db from '../models/index.js';
 
 const app = express();
 
+// initialize/sync the database
 db.sequelize.sync({ force: false }).then(() => {
   console.log('Tables have been successfully created, if they do not already exist');
 }).catch(error => {
