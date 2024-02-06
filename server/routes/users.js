@@ -29,7 +29,7 @@ router.put('/register', async function (req, res, next) {
             errorsList.push('Email address is required')
         }
         if(password){
-            var regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@#&!]).{8,}$/;
+            cont regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@#&!]).{8,}$/;
             if(!regex.test(password)){
                 errorsList.push('Password is not strong')
             }
