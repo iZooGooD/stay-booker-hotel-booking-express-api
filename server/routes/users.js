@@ -1,29 +1,7 @@
 import express from 'express';
 import User from '../../models/User.model.js';
-
+import { validateEmail, validatePhoneNumber, UserExists } from '../utils/validators.js';
 const router = express.Router();
-function validateEmail(email){
-    return String(email)
-      .toLowerCase()
-      .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
-  };
-
-async function UserExists(email){
-    try {
-        const user = await User.findOne({ where: { email } });
-        return user !== null;
-    } catch (error) {
-        console.error('Error checking if user exists:', error);
-        return false;
-    }
-};
-function validatePhoneNumber(input_str) {
-    var re = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/;
-  
-    return re.test(input_str);
-  }
 
 router.put('/register', async function (req, res, next) {
     try {
@@ -68,7 +46,6 @@ router.put('/register', async function (req, res, next) {
         }
 
         if(errorsList.length ==0){
-            // TODO: Add validations and return proper errors.
             await User.create({
                 name: 'Lakshman',
                 email: 'Lakshmanchoudhary020@gmail.com',
