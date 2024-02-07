@@ -13,11 +13,13 @@ const app = express();
 db.sequelize
     .sync({ force: false })
     .then(() => {
+        // eslint-disable-next-line no-console
         console.log(
             'Tables have been successfully created, if they do not already exist'
         );
     })
     .catch((error) => {
+        // eslint-disable-next-line no-console
         console.error('Unable to create tables:', error);
     });
 
@@ -34,12 +36,12 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use(function (_req, _res, next) {
     next();
 });
 
 // error handler
-app.use(function (err, req, res, next) {
+app.use(function (err, req, res) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};

@@ -7,7 +7,7 @@ import {
 } from '../utils/validators.js';
 const router = express.Router();
 
-router.put('/register', async function (req, res, next) {
+router.put('/register', async function (req, res) {
     try {
         const { name, email, password, phoneNumber } = req.query;
         const errorsList = [];
@@ -70,6 +70,7 @@ router.put('/register', async function (req, res, next) {
             });
         }
     } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Error creating user:', error);
         return res.status(500).json({
             errors: ['A technical error has occurred'],

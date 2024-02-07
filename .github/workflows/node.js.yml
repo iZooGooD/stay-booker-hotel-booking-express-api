@@ -28,25 +28,25 @@ jobs:
             - run: npm ci
 
     code-quality:
-      name: Code Quality Checks
-      runs-on: ubuntu-latest
-  
-      steps:
-          - uses: actions/checkout@v3
-          - name: Cache node modules
-            uses: actions/cache@v2
-            with:
-                path: node_modules
-                key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-                restore-keys: |
-                    ${{ runner.os }}-node-
-          - name: Use Node.js 18.x
-            uses: actions/setup-node@v3
-            with:
-                node-version: 18.x
-                cache: 'npm'
-          - run: npm ci
-          - name: Check code formatting with Prettier
-            run: npm run format:check
-          - name: Check code quality with ESLint
-            run: npm run lint:check
+        name: Code Quality Checks
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+            - name: Cache node modules
+              uses: actions/cache@v2
+              with:
+                  path: node_modules
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-node-
+            - name: Use Node.js 18.x
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18.x
+                  cache: 'npm'
+            - run: npm ci
+            - name: Check code formatting with Prettier
+              run: npm run format:check
+            - name: Check code quality with ESLint
+              run: npm run lint:check
