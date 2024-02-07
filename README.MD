@@ -6,10 +6,10 @@ Welcome to the Stay Booker Hotel Booking Express API repository. This API serves
 
 ### Prerequisites
 
-- Node.js (v16 or later recommended)
-- MySQL
-- Git
-- Postman (for testing API endpoints)
+-   Node.js (v16 or later recommended)
+-   MySQL
+-   Git
+-   Postman (for testing API endpoints)
 
 ### Environment Setup
 

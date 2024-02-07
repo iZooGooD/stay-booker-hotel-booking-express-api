@@ -4,14 +4,18 @@
   "type": "module",
   "scripts": {
     "start": "cross-env NODE_ENV=production node ./server/bin/www",
-    "start:dev": "cross-env NODE_ENV=development nodemon ./server/bin/www"
+    "start:dev": "cross-env NODE_ENV=development nodemon ./server/bin/www",
+    "format:check": "prettier --check .",
+    "format:write": "prettier --write .",
+    "lint:check": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "code-fix": "lint-staged"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "cross-env": "^7.0.3",
     "debug": "~2.6.9",
     "dotenv": "^16.4.1",
-    "eslint": "^8.56.0",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
@@ -20,7 +24,20 @@
     "npm-run-all": "^4.1.5",
     "sequelize": "^6.35.2"
   },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ]
+  },
   "devDependencies": {
-    "nodemon": "^3.0.3"
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.33.2",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.2",
+    "nodemon": "^3.0.3",
+    "prettier": "^3.2.5"
   }
 }

@@ -1,0 +1,12 @@
+#!/bin/sh
+# Skip pre-commit hook if -n is provided
+if echo "$@" | grep -E "\-n" > /dev/null; then
+  echo "Skipping pre-commit hook"
+  exit 0
+fi
+
+# Run lint-staged and check if it fails
+if ! npx lint-staged; then
+  echo "Prettier check failed, please fix the errors manually or use: npm run code-fix"
+  exit 1
+fi

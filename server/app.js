@@ -10,11 +10,16 @@ import db from '../models/index.js';
 const app = express();
 
 // initialize/sync the database
-db.sequelize.sync({ force: false }).then(() => {
-  console.log('Tables have been successfully created, if they do not already exist');
-}).catch(error => {
-  console.error('Unable to create tables:', error);
-});
+db.sequelize
+    .sync({ force: false })
+    .then(() => {
+        console.log(
+            'Tables have been successfully created, if they do not already exist'
+        );
+    })
+    .catch((error) => {
+        console.error('Unable to create tables:', error);
+    });
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,18 +35,18 @@ app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  next();
+    next();
 });
 
 // error handler
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
 });
 
 export default app;
