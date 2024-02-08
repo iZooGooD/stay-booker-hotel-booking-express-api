@@ -33,9 +33,8 @@ jobs:
                   fi
 
                   if [ -n "$MISSING_SECTIONS" ]; then
-                    echo "PR is missing the following sections:"
-                    echo -e "$MISSING_SECTIONS"
+                    echo "🚨 The PR is missing the following sections: $MISSING_SECTIONS"
                     exit 1
                   else
-                    echo "All required sections are present."
+                    echo "✅ All required sections are present."
                   fi
