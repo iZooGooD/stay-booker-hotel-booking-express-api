@@ -5,15 +5,28 @@ import {
     UserExists,
 } from '../utils/validators.js';
 
-const validateUserInput = async ({ name, email, password, phoneNumber }) => {
+const validateUserInput = async ({
+    firstName,
+    lastName,
+    email,
+    password,
+    phoneNumber,
+}) => {
     const errorsList = [];
 
-    // Validate name
-    if (!name) errorsList.push('Name is required');
-    else if (name.length < 4)
-        errorsList.push('The name must be at least 4 characters long.');
-    else if (name.length > 64)
-        errorsList.push('The name must not exceed 64 characters.');
+    // Validate firstName
+    if (!firstName) errorsList.push('first name is required');
+    else if (firstName.length < 3)
+        errorsList.push('The first name must be at least 4 characters long.');
+    else if (firstName.length > 64)
+        errorsList.push('The first name must not exceed 64 characters.');
+
+    // Validate lastName
+    if (!lastName) errorsList.push('last name is required');
+    else if (lastName.length < 3)
+        errorsList.push('The last name must be at least 4 characters long.');
+    else if (lastName.length > 64)
+        errorsList.push('The last name must not exceed 64 characters.');
 
     // Validate email
     if (!email) errorsList.push('Email address is required');
@@ -44,7 +57,8 @@ export const registerUser = async (req, res) => {
 
         if (errorsList.length === 0) {
             await User.create({
-                name: req.query.name,
+                firstName: req.query.firstName,
+                lastName: req.query.firstName,
                 email: req.query.email,
                 password: req.query.password,
                 phoneNumber: req.query.phoneNumber,

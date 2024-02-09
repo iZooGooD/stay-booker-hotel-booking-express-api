@@ -4,7 +4,8 @@ import db from './index.js';
 const sequelize = db.sequelize;
 const User = sequelize.define('User', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: DataTypes.STRING,
+    firstName: DataTypes.STRING,
+    lastName: DataTypes.STRING,
     email: { type: DataTypes.STRING, unique: true },
     password: DataTypes.STRING,
     phoneNumber: DataTypes.STRING,
