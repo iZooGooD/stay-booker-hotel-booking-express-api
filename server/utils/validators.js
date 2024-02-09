@@ -1,4 +1,4 @@
-import User from '../../models/User.model.js';
+import User from '../models/User.model.js';
 export function validateEmail(email) {
     return String(email)
         .toLowerCase()

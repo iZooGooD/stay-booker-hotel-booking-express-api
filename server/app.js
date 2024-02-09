@@ -5,7 +5,7 @@ import logger from 'morgan';
 import { fileURLToPath } from 'url';
 import indexRouter from './routes/index.js';
 import usersRouter from './routes/users.js';
-import db from '../models/index.js';
+import db from './models/index.js';
 
 const app = express();
 
