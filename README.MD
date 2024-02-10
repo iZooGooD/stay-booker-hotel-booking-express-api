@@ -51,6 +51,9 @@ PROD_DB_HOST=localhost
 PROD_DB_USER=yourusername
 PROD_DB_PASS=yourpassword
 PROD_DB_NAME=staybooker_prod
+
+# JWT Secret
+JWT_SECRET=jwtsecretforproject
 ```
 
 ### Running the Application
