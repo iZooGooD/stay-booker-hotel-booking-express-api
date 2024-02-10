@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import indexRouter from './routes/index.js';
 import usersRouter from './routes/users.js';
 import db from './models/index.js';
+import cors from 'cors';
 
 const app = express();
 
@@ -28,6 +29,8 @@ const __dirname = path.dirname(__filename);
 
 app.use(logger('dev'));
 app.use(express.json());
+// remove later for prod build
+app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));
