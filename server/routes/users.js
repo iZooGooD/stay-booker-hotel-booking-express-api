@@ -1,19 +1,19 @@
 import express from 'express';
-import { registerUser } from '../controllers/User.controller.js';
+import {
+    registerUser,
+    loginUser,
+    userDetails,
+} from '../controllers/User.controller.js';
+import { authUser } from '../middlewares/auth.js';
 
 const router = express.Router();
 
+router.use(authUser);
+
 router.put('/register', registerUser);
 
-// example of retrieving a user.
-// router.get('/user', async function (req, res, next) {
-//     const email = req.query.email
-//     const user = await User.findAll({
-//         where: {
-//             email,
-//         }
-//     })
-//     return res.status(201).json({ user });
-// });
+router.post('/login', loginUser);
+
+router.get('/myprofile', userDetails);
 
 export default router;

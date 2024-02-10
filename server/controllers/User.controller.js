@@ -4,6 +4,11 @@ import {
     validatePhoneNumber,
     UserExists,
 } from '../utils/validators.js';
+import {
+    generateNewToken,
+    getToken,
+    validateToken,
+} from '../utils/auth-helpers.js';
 
 const validateUserInput = async ({
     firstName,
@@ -83,6 +88,67 @@ export const registerUser = async (req, res) => {
             errors: ['A technical error has occurred'],
             data: {
                 status: 'User not created',
+            },
+        });
+    }
+};
+
+/**
+ * Handles user login, including token generation and validation.
+ *
+ * @param {Object} req - The request object containing login credentials.
+ * @param {Object} res - The response object used to send back the HTTP response.
+ * @returns {Promise} A promise that resolves to the HTTP response with either a token or an error message.
+ */
+export const loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // TODO, use bcrypt to compare passwords
+        const user = await User.findOne({
+            where: {
+                email,
+                password,
+            },
+        });
+
+        if (user) {
+            // Check for existing token in the authorization header
+            const existingToken = getToken(req.headers.authorization);
+            const isTokenValid = validateToken(existingToken);
+
+            if (existingToken && isTokenValid) {
+                // If an existing token is valid, return it
+                return res.status(200).json({ token: existingToken });
+            } else {
+                // Generate a new token for the user - possibly the token is expired.
+                const token = generateNewToken(user);
+                return res.status(200).json({ token });
+            }
+        } else {
+            return res
+                .status(404)
+                .json({ message: 'User not found or invalid credentials' });
+        }
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(error);
+        return res.status(500).json({
+            message: 'An error occurred during the login process',
+        });
+    }
+};
+
+export const userDetails = async (req, res) => {
+    try {
+        return res.status(200).json({
+            status: 'Welcome',
+        });
+    } catch (error) {
+        return res.status(500).json({
+            errors: ['A technical error has occurred'],
+            data: {
+                status: 'Could not verify token',
             },
         });
     }
