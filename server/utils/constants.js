@@ -9,8 +9,8 @@ export const BCRYPT_CONFIG = Object.freeze({
  * Standard messages related to user creation outcomes.
  */
 export const USER_CREATION_MESSAGES = Object.freeze({
-    SUCCESS: 'Registration Succesfull',
-    FAILED: 'Registrartion Failed',
+    SUCCESS: 'Registration Successful',
+    FAILED: 'Registration Failed',
 });
 
 /**
