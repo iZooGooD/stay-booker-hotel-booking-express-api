@@ -5,25 +5,51 @@ import {
     getToken,
     validateToken,
 } from '../utils/auth-helpers.js';
+import bcrypt from 'bcrypt';
+
+const BCRYPT_CONFIG = {
+    SALT_ROUNDS: 10,
+};
+
+const USER_CREATION_MESSAGES = {
+    SUCCESS: 'Registration Succesfull',
+    FAILED: 'Registrartion Failed',
+};
 
 export const registerUser = async (req, res) => {
     try {
-        const errorsList = await validateUserInputs(req.query);
+        const errorsList = await validateUserInputs(req.body);
         if (errorsList.length === 0) {
-            await User.create({
-                firstName: req.query.firstName,
-                lastName: req.query.firstName,
-                email: req.query.email,
-                password: req.query.password,
-                phoneNumber: req.query.phoneNumber,
-                profilePicture: '',
-            });
-            return res.status(201).json({
-                errors: [],
-                data: {
-                    status: 'User created successfully',
-                },
-            });
+            bcrypt.hash(
+                req.body.password,
+                BCRYPT_CONFIG.SALT_ROUNDS,
+                async (err, hash) => {
+                    if (!err) {
+                        await User.create({
+                            firstName: req.body.firstName,
+                            lastName: req.body.firstName,
+                            email: req.body.email,
+                            password: hash,
+                            phoneNumber: req.body.phoneNumber,
+                            profilePicture: '',
+                        });
+                    } else {
+                        // eslint-disable-next-line no-console
+                        console.error(
+                            'Error while generating hashing password',
+                            err.message
+                        );
+                    }
+                    return res.status(201).json({
+                        errors: [],
+                        data: {
+                            status: err
+                                ? USER_CREATION_MESSAGES.FAILED
+                                : USER_CREATION_MESSAGES.SUCCESS,
+                        },
+                    });
+                }
+            );
         } else {
             return res.status(400).json({
                 errors: errorsList,
@@ -52,33 +78,39 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
-
-        // TODO, use bcrypt to compare passwords
         const user = await User.findOne({
             where: {
                 email,
-                password,
             },
         });
+        bcrypt.compare(password, user.password, (err, result) => {
+            if (result && !err) {
+                // Check for existing token in the authorization header
+                const existingToken = getToken(req.headers.authorization);
+                const isTokenValid = validateToken(existingToken);
 
-        if (user) {
-            // Check for existing token in the authorization header
-            const existingToken = getToken(req.headers.authorization);
-            const isTokenValid = validateToken(existingToken);
-
-            if (existingToken && isTokenValid) {
-                // If an existing token is valid, return it
-                return res.status(200).json({ token: existingToken });
+                if (existingToken && isTokenValid) {
+                    // If an existing token is valid, return it
+                    return res.status(200).json({ token: existingToken });
+                } else {
+                    // Generate a new token for the user - possibly the token is expired or its the first login attempt.
+                    const token = generateNewToken(user);
+                    return res.status(200).json({ token });
+                }
             } else {
-                // Generate a new token for the user - possibly the token is expired.
-                const token = generateNewToken(user);
-                return res.status(200).json({ token });
+                if (err) {
+                    // eslint-disable-next-line no-console
+                    console.error(
+                        'An error occured during comparison of hashed and plain password',
+                        err.message
+                    );
+                }
+                // even if there is an error, we just want to return a generic error.
+                return res
+                    .status(404)
+                    .json({ message: 'User not found or invalid credentials' });
             }
-        } else {
-            return res
-                .status(404)
-                .json({ message: 'User not found or invalid credentials' });
-        }
+        });
     } catch (error) {
         // eslint-disable-next-line no-console
         console.error(error);
