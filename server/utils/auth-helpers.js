@@ -24,8 +24,8 @@ export const getToken = (authorization) => {
  */
 export const validateToken = (token) => {
     try {
-        Jwt.verify(token, process.env.JWT_SECRET);
-        return true;
+        const decodedToken = Jwt.verify(token, process.env.JWT_SECRET);
+        return decodedToken;
     } catch (error) {
         return false;
     }

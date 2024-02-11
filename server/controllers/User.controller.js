@@ -1,65 +1,14 @@
 import User from '../models/User.model.js';
-import {
-    validateEmail,
-    validatePhoneNumber,
-    UserExists,
-} from '../utils/validators.js';
+import { validateUserInputs } from '../utils/validators.js';
 import {
     generateNewToken,
     getToken,
     validateToken,
 } from '../utils/auth-helpers.js';
 
-const validateUserInput = async ({
-    firstName,
-    lastName,
-    email,
-    password,
-    phoneNumber,
-}) => {
-    const errorsList = [];
-
-    // Validate firstName
-    if (!firstName) errorsList.push('first name is required');
-    else if (firstName.length < 3)
-        errorsList.push('The first name must be at least 4 characters long.');
-    else if (firstName.length > 64)
-        errorsList.push('The first name must not exceed 64 characters.');
-
-    // Validate lastName
-    if (!lastName) errorsList.push('last name is required');
-    else if (lastName.length < 3)
-        errorsList.push('The last name must be at least 4 characters long.');
-    else if (lastName.length > 64)
-        errorsList.push('The last name must not exceed 64 characters.');
-
-    // Validate email
-    if (!email) errorsList.push('Email address is required');
-    else if (!validateEmail(email))
-        errorsList.push('The email address format is invalid.');
-    else if (await UserExists(email)) errorsList.push('This Email is taken');
-
-    // Validate password
-    if (!password) errorsList.push('Password is required.');
-    else if (
-        !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@#&!]).{8,}$/.test(password)
-    )
-        errorsList.push(
-            'Password must be at least 8 characters long and include a number, an uppercase letter, a lowercase letter, and a special character ($, @, #, &, or !).'
-        );
-
-    // Validate phone number
-    if (!phoneNumber) errorsList.push('Phone number is required.');
-    else if (!validatePhoneNumber(phoneNumber))
-        errorsList.push('The phone number format is invalid.');
-
-    return errorsList;
-};
-
 export const registerUser = async (req, res) => {
     try {
-        const errorsList = await validateUserInput(req.query);
-
+        const errorsList = await validateUserInputs(req.query);
         if (errorsList.length === 0) {
             await User.create({
                 firstName: req.query.firstName,
@@ -139,10 +88,25 @@ export const loginUser = async (req, res) => {
     }
 };
 
-export const userDetails = async (req, res) => {
+/**
+ * Fetches and returns user details by user ID.
+ *
+ * @param {Object} req - The request object from Express.js, containing the user's information in `req.user`.
+ * @param {Object} res - The response object from Express.js used to send back the desired HTTP response.
+ * @returns {Promise<Object>} A promise that resolves to the response object, which includes the user's details or an error message.
+ */
+export const getUser = async (req, res) => {
     try {
+        const { id: userId } = req.user;
+        const userDetails = await User.findByPk(userId);
+        const { firstName, lastName, email } = userDetails;
         return res.status(200).json({
-            status: 'Welcome',
+            errors: [],
+            data: {
+                firstName,
+                lastName,
+                email,
+            },
         });
     } catch (error) {
         return res.status(500).json({
