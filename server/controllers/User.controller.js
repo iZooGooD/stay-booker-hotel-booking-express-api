@@ -87,7 +87,12 @@ export const loginUser = async (req, res) => {
                 } else {
                     // Generate a new token for the user - possibly the token is expired or its the first login attempt.
                     const token = generateNewToken(user);
-                    return res.status(200).json({ token });
+                    return res.status(200).json({
+                        data: {
+                            token,
+                        },
+                        errors: [],
+                    });
                 }
             } else {
                 if (err) {
@@ -98,9 +103,10 @@ export const loginUser = async (req, res) => {
                     );
                 }
                 // even if there is an error, we just want to return a generic error.
-                return res
-                    .status(404)
-                    .json({ message: 'User not found or invalid credentials' });
+                return res.status(404).json({
+                    errors: ['User not found or invalid credentials'],
+                    data: {},
+                });
             }
         });
     } catch (error) {
