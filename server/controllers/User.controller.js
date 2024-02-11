@@ -6,15 +6,7 @@ import {
     validateToken,
 } from '../utils/auth-helpers.js';
 import bcrypt from 'bcrypt';
-
-const BCRYPT_CONFIG = {
-    SALT_ROUNDS: 10,
-};
-
-const USER_CREATION_MESSAGES = {
-    SUCCESS: 'Registration Succesfull',
-    FAILED: 'Registrartion Failed',
-};
+import { BCRYPT_CONFIG, USER_CREATION_MESSAGES } from '../utils/constants.js';
 
 export const registerUser = async (req, res) => {
     try {

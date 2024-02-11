@@ -1,11 +1,5 @@
 import { getToken, validateToken } from '../utils/auth-helpers.js';
-
-/**
- * A collection of error messages related to JWT authentication.
- */
-const ERROR_MESSAGES = {
-    JWT_GENERAL: 'Validation of token failed',
-};
+import { ERROR_MESSAGES } from '../utils/constants.js';
 
 /**
  * Middleware to authenticate users based on the JWT token provided in the request headers.
