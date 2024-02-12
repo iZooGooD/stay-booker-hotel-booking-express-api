@@ -16,6 +16,14 @@ export const USER_CREATION_MESSAGES = Object.freeze({
 /**
  * A collection of error messages related to JWT authentication.
  */
-export const ERROR_MESSAGES = Object.freeze({
+export const JWT_ERROR_MESSAGES = Object.freeze({
     JWT_GENERAL: 'Validation of token failed',
+});
+
+/**
+ * Config for response cookie when user authenticates on /login route.
+ */
+export const HTTP_RESPONSE_COOKIE_CONFIG = Object.freeze({
+    MAX_AGE: 1000 * 60 * 15, // would expire after 15 minutes
+    HTTP_ONLY: true,
 });

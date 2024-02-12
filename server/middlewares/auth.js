@@ -1,5 +1,5 @@
-import { getToken, validateToken } from '../utils/auth-helpers.js';
-import { ERROR_MESSAGES } from '../utils/constants.js';
+import { validateToken } from '../utils/auth-helpers.js';
+import { JWT_ERROR_MESSAGES } from '../utils/constants.js';
 
 /**
  * Middleware to authenticate users based on the JWT token provided in the request headers.
@@ -17,10 +17,10 @@ import { ERROR_MESSAGES } from '../utils/constants.js';
  *  If the token is invalid, it responds with a 403 status code and an error message indicating that token validation failed.
  */
 export const authUser = (req, res, next) => {
-    if (!req.headers.authorization) {
-        return res.status(401).json({ status: 'No credentials' });
+    if (!req.cookies._token) {
+        return res.status(401).json({ status: 'Please re-authenticate' });
     } else {
-        const token = getToken(req.headers.authorization);
+        const token = req.cookies._token ?? '';
         const isTokenValid = validateToken(token);
         if (isTokenValid) {
             req.user = {
@@ -28,7 +28,9 @@ export const authUser = (req, res, next) => {
             };
             return next();
         } else {
-            return res.status(403).json({ status: ERROR_MESSAGES.JWT_GENERAL });
+            return res
+                .status(403)
+                .json({ status: JWT_ERROR_MESSAGES.JWT_GENERAL });
         }
     }
 };

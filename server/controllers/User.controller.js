@@ -1,12 +1,12 @@
 import User from '../models/User.model.js';
 import { validateUserInputs } from '../utils/validators.js';
-import {
-    generateNewToken,
-    getToken,
-    validateToken,
-} from '../utils/auth-helpers.js';
+import { generateNewToken, validateToken } from '../utils/auth-helpers.js';
 import bcrypt from 'bcrypt';
-import { BCRYPT_CONFIG, USER_CREATION_MESSAGES } from '../utils/constants.js';
+import {
+    BCRYPT_CONFIG,
+    USER_CREATION_MESSAGES,
+    HTTP_RESPONSE_COOKIE_CONFIG,
+} from '../utils/constants.js';
 
 export const registerUser = async (req, res) => {
     try {
@@ -68,6 +68,10 @@ export const registerUser = async (req, res) => {
  * @returns {Promise} A promise that resolves to the HTTP response with either a token or an error message.
  */
 export const loginUser = async (req, res) => {
+    const cookieOptions = {
+        maxAge: HTTP_RESPONSE_COOKIE_CONFIG.MAX_AGE,
+        httpOnly: HTTP_RESPONSE_COOKIE_CONFIG.HTTP_ONLY,
+    };
     try {
         const { email, password } = req.body;
         const user = await User.findOne({
@@ -77,16 +81,24 @@ export const loginUser = async (req, res) => {
         });
         bcrypt.compare(password, user.password, (err, result) => {
             if (result && !err) {
-                // Check for existing token in the authorization header
-                const existingToken = getToken(req.headers.authorization);
+                // Check for existing cookie
+                const existingToken = req.cookies._token ?? '';
                 const isTokenValid = validateToken(existingToken);
 
                 if (existingToken && isTokenValid) {
+                    res.cookie('_token', cookieOptions);
                     // If an existing token is valid, return it
-                    return res.status(200).json({ token: existingToken });
+                    return res.status(200).json({
+                        data: {
+                            token: existingToken,
+                        },
+                        errors: [],
+                    });
                 } else {
                     // Generate a new token for the user - possibly the token is expired or its the first login attempt.
                     const token = generateNewToken(user);
+
+                    res.cookie('_token', token, cookieOptions);
                     return res.status(200).json({
                         data: {
                             token,
