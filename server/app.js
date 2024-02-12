@@ -30,7 +30,12 @@ const __dirname = path.dirname(__filename);
 app.use(logger('dev'));
 app.use(express.json());
 // remove later for prod build
-app.use(cors());
+app.use(
+    cors({
+        origin: 'http://localhost:3000', // port for react app
+        credentials: true,
+    })
+);
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));
