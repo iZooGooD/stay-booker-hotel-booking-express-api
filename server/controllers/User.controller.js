@@ -11,51 +11,49 @@ import {
 export const registerUser = async (req, res) => {
     try {
         const errorsList = await validateUserInputs(req.body);
-        if (errorsList.length === 0) {
-            bcrypt.hash(
-                req.body.password,
-                BCRYPT_CONFIG.SALT_ROUNDS,
-                async (err, hash) => {
-                    if (!err) {
-                        await User.create({
-                            firstName: req.body.firstName,
-                            lastName: req.body.lastName,
-                            email: req.body.email,
-                            password: hash,
-                            phoneNumber: req.body.phoneNumber,
-                            profilePicture: '',
-                        });
-                    } else {
-                        // eslint-disable-next-line no-console
-                        console.error(
-                            'Error while generating hashing password',
-                            err.message
-                        );
-                    }
-                    return res.status(201).json({
-                        errors: [],
-                        data: {
-                            status: err
-                                ? USER_CREATION_MESSAGES.FAILED
-                                : USER_CREATION_MESSAGES.SUCCESS,
-                        },
-                    });
-                }
-            );
-        } else {
+        if (errorsList.length > 0) {
             return res.status(400).json({
                 errors: errorsList,
-                data: {
-                    status: 'User not created',
-                },
+                data: { status: 'User not created' },
+            });
+        }
+
+        // Using bcrypt.hash in an async manner
+        try {
+            const hash = await bcrypt.hash(
+                req.body.password,
+                BCRYPT_CONFIG.SALT_ROUNDS
+            );
+            await User.create({
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                email: req.body.email,
+                password: hash,
+                phoneNumber: req.body.phoneNumber,
+                profilePicture: '',
+            });
+
+            return res.status(201).json({
+                errors: [],
+                data: { status: USER_CREATION_MESSAGES.SUCCESS },
+            });
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error(
+                'Error while generating hashing password',
+                err.message
+            );
+            return res.status(500).json({
+                errors: ['Error while generating hashing password'],
+                data: { status: USER_CREATION_MESSAGES.FAILED },
             });
         }
     } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('A technical error has occurred', error);
         return res.status(500).json({
             errors: ['A technical error has occurred'],
-            data: {
-                status: 'User not created',
-            },
+            data: { status: 'User not created' },
         });
     }
 };
@@ -72,60 +70,52 @@ export const loginUser = async (req, res) => {
         maxAge: HTTP_RESPONSE_COOKIE_CONFIG.MAX_AGE,
         httpOnly: HTTP_RESPONSE_COOKIE_CONFIG.HTTP_ONLY,
     };
+
     try {
         const { email, password } = req.body;
-        const user = await User.findOne({
-            where: {
-                email,
-            },
-        });
-        bcrypt.compare(password, user.password, (err, result) => {
-            if (result && !err) {
-                // Check for existing cookie
-                const existingToken = req.cookies._token ?? '';
-                const isTokenValid = validateToken(existingToken);
+        const user = await User.findOne({ where: { email } });
 
-                if (existingToken && isTokenValid) {
-                    res.cookie('_token', cookieOptions);
-                    // If an existing token is valid, return it
-                    return res.status(200).json({
-                        data: {
-                            token: existingToken,
-                        },
-                        errors: [],
-                    });
-                } else {
-                    // Generate a new token for the user - possibly the token is expired or its the first login attempt.
-                    const token = generateNewToken(user);
+        if (!user) {
+            return res.status(404).json({
+                errors: ['User not found or invalid credentials'],
+                data: {},
+            });
+        }
 
-                    res.cookie('_token', token, cookieOptions);
-                    return res.status(200).json({
-                        data: {
-                            token,
-                        },
-                        errors: [],
-                    });
-                }
-            } else {
-                if (err) {
-                    // eslint-disable-next-line no-console
-                    console.error(
-                        'An error occured during comparison of hashed and plain password',
-                        err.message
-                    );
-                }
-                // even if there is an error, we just want to return a generic error.
-                return res.status(404).json({
-                    errors: ['User not found or invalid credentials'],
-                    data: {},
-                });
-            }
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) {
+            return res.status(404).json({
+                errors: ['User not found or invalid credentials'],
+                data: {},
+            });
+        }
+
+        // Check for existing cookie
+        const existingToken = req.cookies._token ?? '';
+        const isTokenValid = validateToken(existingToken);
+
+        if (existingToken && isTokenValid) {
+            res.cookie('_token', existingToken, cookieOptions);
+            return res.status(200).json({
+                data: { token: existingToken },
+                errors: [],
+            });
+        }
+
+        // Generate a new token for the user - possibly the token is expired or it's the first login attempt.
+        const token = generateNewToken(user);
+        res.cookie('_token', token, cookieOptions);
+        return res.status(200).json({
+            data: { token },
+            errors: [],
         });
     } catch (error) {
         // eslint-disable-next-line no-console
-        console.error(error);
+        console.error('An error occurred during the login process', error);
         return res.status(500).json({
-            message: 'An error occurred during the login process',
+            errors: ['An error occurred during the login process'],
+            data: {},
         });
     }
 };
