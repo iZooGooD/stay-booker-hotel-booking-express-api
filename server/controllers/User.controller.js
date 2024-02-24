@@ -121,6 +121,18 @@ export const loginUser = async (req, res) => {
 };
 
 /**
+ * Logs out the user by clearing the JWT token cookie.
+ *
+ * @param {Object} _req - The request object from Express.js, which is not used in this function.
+ * @param {Object} res - The response object from Express.js used to send back the desired HTTP response.
+ * @returns {Object} The HTTP response with a message indicating that the user has been logged out successfully.
+ */
+export const logoutUser = (_req, res) => {
+    res.clearCookie('_token');
+    return res.status(200).json({ message: 'User logged out successfully' });
+};
+
+/**
  * Fetches and returns user details by user ID.
  *
  * @param {Object} req - The request object from Express.js, containing the user's information in `req.user`.
@@ -131,21 +143,33 @@ export const getUser = async (req, res) => {
     try {
         const { id: userId } = req.user;
         const userDetails = await User.findByPk(userId);
-        const { firstName, lastName, email } = userDetails;
+        const {
+            firstName,
+            lastName,
+            email,
+            phoneNumber,
+            country,
+            isPhoneVerified,
+            isEmailVerified,
+        } = userDetails;
         return res.status(200).json({
             errors: [],
             data: {
-                firstName,
-                lastName,
-                email,
+                isAuthenticated: true,
+                userDetails: {
+                    firstName,
+                    lastName,
+                    email,
+                    phoneNumber,
+                    country,
+                    isPhoneVerified,
+                    isEmailVerified,
+                },
             },
         });
     } catch (error) {
         return res.status(500).json({
             errors: ['A technical error has occurred'],
-            data: {
-                status: 'Could not verify token',
-            },
         });
     }
 };

@@ -9,6 +9,9 @@ const User = sequelize.define('User', {
     email: { type: DataTypes.STRING, unique: true },
     password: DataTypes.STRING,
     phoneNumber: DataTypes.STRING,
+    country: DataTypes.STRING,
+    isPhoneVerified: DataTypes.BOOLEAN,
+    isEmailVerified: DataTypes.BOOLEAN,
     profilePicture: DataTypes.STRING,
 });
 

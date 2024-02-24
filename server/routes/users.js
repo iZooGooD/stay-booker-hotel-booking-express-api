@@ -3,6 +3,7 @@ import {
     registerUser,
     loginUser,
     getUser,
+    logoutUser,
 } from '../controllers/User.controller.js';
 import { authUser } from '../middlewares/auth.js';
 
@@ -23,11 +24,18 @@ router.put('/register', registerUser);
 router.post('/login', loginUser);
 
 /**
- * @route GET /myprofile
+ * @route GET /auth-user
  * @desc Fetch the user's profile information. This route is protected and requires authentication.
  * @access Protected
  * @middleware authUser - Ensures that the request is authenticated.
  */
-router.get('/myprofile', authUser, getUser);
+router.get('/auth-user', authUser, getUser);
+
+/**
+ * @route POST /logout
+ * @desc Logs out the user by clearing the JWT token cookie.
+ * @access Protected
+ */
+router.post('/logout', authUser, logoutUser);
 
 export default router;

@@ -18,7 +18,13 @@ import { JWT_ERROR_MESSAGES } from '../utils/constants.js';
  */
 export const authUser = (req, res, next) => {
     if (!req.cookies._token) {
-        return res.status(401).json({ status: 'Please re-authenticate' });
+        return res.status(401).json({
+            data: {
+                isAuthenticated: false,
+                userDetails: {},
+            },
+            errors: ['Please login to access this resource'],
+        });
     } else {
         const token = req.cookies._token ?? '';
         const isTokenValid = validateToken(token);
