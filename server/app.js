@@ -41,11 +41,13 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/api/users', usersRouter);
 
-// catch 404 and forward to error handler
-app.use(function (_req, _res, next) {
-    next();
+// catch 404
+app.use(function (_req, res) {
+    res.status(404).json({
+        message: 'No route found',
+    });
 });
 
 // error handler
