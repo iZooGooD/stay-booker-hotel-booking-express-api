@@ -4,6 +4,7 @@ import {
     loginUser,
     getUser,
     logoutUser,
+    updateUser,
 } from '../controllers/User.controller.js';
 import { authUser } from '../middlewares/auth.js';
 
@@ -37,5 +38,12 @@ router.get('/auth-user', authUser, getUser);
  * @access Protected
  */
 router.post('/logout', authUser, logoutUser);
+
+/**
+ * @route PATCH /update
+ * @desc Updates the user's profile information. This route is protected and requires authentication.
+ * @access Protected
+ */
+router.patch('/update', authUser, updateUser);
 
 export default router;

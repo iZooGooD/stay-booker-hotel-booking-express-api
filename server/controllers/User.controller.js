@@ -173,3 +173,28 @@ export const getUser = async (req, res) => {
         });
     }
 };
+
+/**
+ * Updates the user's profile information.
+ *
+ * @param {Object} req - The request object from Express.js, containing the user's updated details.
+ * @param {Object} res - The response object from Express.js used to send back the desired HTTP response.
+ * @returns {Promise<Object>} A promise that resolves to the response object, which includes the user's updated details or an error message.
+ */
+export const updateUser = async (req, res) => {
+    try {
+        const { id: userId } = req.user;
+        const userDetails = await User.findByPk(userId);
+        const updatedUserDetails = await userDetails.update(req.body);
+        return res.status(200).json({
+            errors: [],
+            data: {
+                updatedUserDetails,
+            },
+        });
+    } catch (error) {
+        return res.status(500).json({
+            errors: ['A technical error has occurred'],
+        });
+    }
+};
